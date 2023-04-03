@@ -116,35 +116,35 @@ class FeatureExtractor(object):
 
     def get_input_representation(self, words, pos, state):
         # TODO: Write this method for Part 2
-        special_ch = {"CD":0, "NNP": 1, "UNK": 2, "ROOT": 3, "NULL": 4}
+        special_ch = {"CD":0, "NNP": 1, "UNK": 2, None: 3, "NULL": 4}
         input_list = []
         for i in range(-1,-4,-1):
-            temp = state.stack[i] if state.stack > -1-i else 'NULL'
+            temp = state.stack[i] if len(state.stack) > -1-i else 'NULL'
             input_list.append(temp)
         for i in range(-1,-4,-1):
             temp = state.buffer[i] if len(state.buffer) > -1-i else 'NULL'
             input_list.append(temp)
-        # print(input_list)
         for i in range(6):
             cur = input_list[i]
-            top_pos = pos[cur] if list_curr != 'NULL' else 'NULL'
-            if top_pos in special_ch_dict:
-                input_rep[i] = special_ch_dict[top_pos]
+            real_word = pos[cur] if cur != 'NULL' else 'NULL'
+            if real_word in special_ch:
+                input_list[i] = special_ch[real_word]
             else:
-                word = words[list_curr].lower()
+                word = words[cur].lower()
                 if word in self.word_vocab:
-                    input_rep[i] = self.word_vocab[word]
+                    input_list[i] = self.word_vocab[word]
                 else:
-                    input_rep[i] = special_ch_dict['UNK']
+                    input_list[i] = special_ch['UNK']
 
-        as_np_array = np.array(input_rep)
-        # return as_np_array
+        return np.array(input_list)
 
-        return np.zeros(6)
 
     def get_output_representation(self, output_pair):  
         # TODO: Write this method for Part 2
-        return np.zeros(91)
+        output_list = np.zeros(91)
+        output_list[self.output_labels.get(output_pair)] = 1
+        return output_list
+     
 
      
     
